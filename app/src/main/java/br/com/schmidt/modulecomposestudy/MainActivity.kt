@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -16,10 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.schmidt.modulecomposestudy.ui.theme.ModuleComposeStudyTheme
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,26 +38,26 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
     Scaffold(topBar = { AppBar() } , content = {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
         ) {
-            Column {
-                userProfileList.forEach { userProfile ->
-                    ProfileCard(userProfile)
+            LazyColumn {
+                items(userProfiles.size) { index ->
+                    ProfileCard(userProfiles[index])
                 }
             }
         }
     })
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(){
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.smallTopAppBarColors(),
+    TopAppBar(
         title = { Text("TopAppBar") },
         navigationIcon = {
             IconButton(onClick = { /* doSomething() */ }) {
@@ -119,8 +123,14 @@ fun ProfilePicture(drawableId: Int, status: Boolean) {
         modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
+        val painter = rememberAsyncImagePainter(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(drawableId)
+                .size(Size.ORIGINAL) // Set the target size to load the image at.
+                .build()
+        )
         Image(
-            painter = painterResource(id = drawableId),
+            painter = painter,
             contentDescription = "teste",
             contentScale = ContentScale.Fit,
             modifier = imageModifier
