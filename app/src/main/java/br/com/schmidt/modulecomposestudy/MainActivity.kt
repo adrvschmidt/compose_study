@@ -8,6 +8,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,19 +26,35 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            ModuleComposeStudyTheme {
+                MainScreen()
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.LightGray
-    ) {
-        ProfileCard()
-    }
+    Scaffold(topBar = { AppBar() } , content = {
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(it),
+        ) {
+            ProfileCard()
+        }
+    })
+}
+
+@Composable
+fun AppBar(){
+    SmallTopAppBar(
+        title = { Text("TopAppBar") },
+        navigationIcon = {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(Icons.Filled.Home, contentDescription = null)
+            }
+        },
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +65,10 @@ fun ProfileCard() {
             .padding(16.dp)
             .fillMaxWidth()
             .wrapContentHeight(align = Alignment.Top),
-        elevation = CardDefaults.cardElevation(8.dp)
+        elevation = CardDefaults.cardElevation(8.dp),
+        colors =  CardDefaults.cardColors(
+            containerColor =  Color.White,
+        ),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
