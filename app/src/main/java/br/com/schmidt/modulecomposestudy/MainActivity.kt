@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,16 +37,23 @@ class MainActivity : ComponentActivity() {
 fun MainScreen() {
     Scaffold(topBar = { AppBar() } , content = {
         Surface(
-            modifier = Modifier.fillMaxSize().padding(it),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
         ) {
-            ProfileCard()
+            Column {
+                userProfileList.forEach { userProfile ->
+                    ProfileCard(userProfile)
+                }
+            }
         }
     })
 }
 
 @Composable
 fun AppBar(){
-    SmallTopAppBar(
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.smallTopAppBarColors(),
         title = { Text("TopAppBar") },
         navigationIcon = {
             IconButton(onClick = { /* doSomething() */ }) {
@@ -59,10 +65,10 @@ fun AppBar(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileCard() {
+fun ProfileCard(userProfile: UserProfile) {
     Card(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight(align = Alignment.Top),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -75,45 +81,46 @@ fun ProfileCard() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            ProfilePicture()
-            ProfileContent()
+            ProfilePicture(userProfile.drawableId, userProfile.status)
+            ProfileContent(userProfile.name, userProfile.status)
         }
     }
 }
 
 @Composable
-fun ProfileContent() {
+fun ProfileContent(name: String, status: Boolean) {
     Column(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
     ) {
         Text(
-            "Adriano",
+            name,
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            "Active Row",
+            text = if(status)
+            "Active Row" else "Offline",
             style = MaterialTheme.typography.bodySmall,
-            color = Color.Black.copy(alpha = 0.5f)
+            color = if(status) Color.Black.copy(alpha = 0.8f) else Color.Black.copy(alpha = 0.5f)
         )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfilePicture() {
+fun ProfilePicture(drawableId: Int, status: Boolean) {
     val imageModifier = Modifier
         .size(75.dp)
         .background(Color.LightGray)
     Card(
         shape = CircleShape,
-        border = BorderStroke(width = 2.dp, color = Color.Green),
+        border = BorderStroke(width = 2.dp, color = if(status) Color.Green else Color.Red),
         modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.rick_profile),
+            painter = painterResource(id = drawableId),
             contentDescription = "teste",
             contentScale = ContentScale.Fit,
             modifier = imageModifier
