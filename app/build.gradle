@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'br.com.schmidt.modulecomposestudy'
+    namespace 'br.com.schmidt.composestudy'
     compileSdk 33
 
     defaultConfig {
-        applicationId "br.com.schmidt.modulecomposestudy"
+        applicationId "br.com.schmidt.composestudy"
         minSdk 24
         targetSdk 33
         versionCode 1
