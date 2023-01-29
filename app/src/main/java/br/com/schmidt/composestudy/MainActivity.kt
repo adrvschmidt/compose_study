@@ -1,4 +1,4 @@
-package br.com.schmidt.modulecomposestudy
+package br.com.schmidt.composestudy
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import br.com.schmidt.modulecomposestudy.ui.theme.ModuleComposeStudyTheme
+import br.com.schmidt.composestudy.ui.theme.ModuleComposeStudyTheme
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size

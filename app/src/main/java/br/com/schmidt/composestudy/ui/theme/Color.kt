@@ -1,4 +1,4 @@
-package br.com.schmidt.modulecomposestudy.ui.theme
+package br.com.schmidt.composestudy.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package br.com.schmidt.modulecomposestudy.ui.theme
+package br.com.schmidt.composestudy.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

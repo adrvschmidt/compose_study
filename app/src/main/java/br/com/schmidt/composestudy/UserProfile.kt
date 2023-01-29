@@ -1,4 +1,6 @@
-package br.com.schmidt.modulecomposestudy
+package br.com.schmidt.composestudy
+
+import br.com.schmidt.modulecomposestudy.R
 
 data class UserProfile constructor(val name: String, val status: Boolean, val drawableId: Int)
 

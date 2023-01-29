@@ -1,4 +1,4 @@
-package br.com.schmidt.modulecomposestudy
+package br.com.schmidt.composestudy
 
 import org.junit.Test
 

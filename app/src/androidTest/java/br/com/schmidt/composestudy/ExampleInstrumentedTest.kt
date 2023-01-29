@@ -1,4 +1,4 @@
-package br.com.schmidt.modulecomposestudy
+package br.com.schmidt.composestudy
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
