@@ -23,9 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import br.com.schmidt.composestudy.ui.theme.ModuleComposeStudyTheme
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -49,8 +51,10 @@ fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
         composable("users_list") {
             MainScreen(userProfiles, navController)
         }
-        composable("users_details") {
-            UserProfileDetailScreen()
+        composable(route = "users_details/{userId}", arguments = listOf(navArgument("userId") {
+            type = NavType.IntType
+        })) { navBackStackEntry ->
+            UserProfileDetailScreen(navBackStackEntry.arguments!!.getInt("userId"))
         }
     }
 }
@@ -67,7 +71,7 @@ fun MainScreen(userProfiles: List<UserProfile>, navController: NavController?) {
             LazyColumn {
                 items(userProfiles.size) { index ->
                     ProfileCard(userProfiles[index]) {
-                        navController?.navigate("users_details")
+                        navController?.navigate("users_details/${userProfiles[index].id}")
                     }
                 }
             }
@@ -162,7 +166,8 @@ fun ProfilePicture(drawableId: Int, status: Boolean, imageSize: Dp) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
+fun UserProfileDetailScreen(userId: Int) {
+    val userProfile = userProfileList.first { userProfile -> userId == userProfile.id }
     Scaffold(topBar = { AppBar() } , content = {
         Surface(
             modifier = Modifier
@@ -185,7 +190,7 @@ fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
 @Composable
 fun UserDetailtPreview() {
     ModuleComposeStudyTheme {
-        UserProfileDetailScreen()
+        UserProfileDetailScreen(1)
     }
 }
 
