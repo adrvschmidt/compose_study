@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +56,7 @@ fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
         composable(route = "users_details/{userId}", arguments = listOf(navArgument("userId") {
             type = NavType.IntType
         })) { navBackStackEntry ->
-            UserProfileDetailScreen(navBackStackEntry.arguments!!.getInt("userId"))
+            UserProfileDetailScreen(navBackStackEntry.arguments!!.getInt("userId"), navController)
         }
     }
 }
@@ -62,31 +64,34 @@ fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(userProfiles: List<UserProfile>, navController: NavController?) {
-    Scaffold(topBar = { AppBar() } , content = {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
-        ) {
-            LazyColumn {
-                items(userProfiles.size) { index ->
-                    ProfileCard(userProfiles[index]) {
-                        navController?.navigate("users_details/${userProfiles[index].id}")
+    Scaffold(topBar = {
+        AppBar(title = "Users List", icon = Icons.Default.Home) {}
+    },
+        content = {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+            ) {
+                LazyColumn {
+                    items(userProfiles.size) { index ->
+                        ProfileCard(userProfiles[index]) {
+                            navController?.navigate("users_details/${userProfiles[index].id}")
+                        }
                     }
                 }
             }
-        }
-    })
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(){
+fun AppBar(title: String, icon: ImageVector, iconClickAction: () -> Unit) {
     TopAppBar(
-        title = { Text("TopAppBar") },
+        title = { Text(title) },
         navigationIcon = {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(Icons.Filled.Home, contentDescription = null)
+            IconButton(onClick = { iconClickAction.invoke() }) {
+                Icon(icon, contentDescription = null)
             }
         },
     )
@@ -102,8 +107,8 @@ fun ProfileCard(userProfile: UserProfile, clickAction: () -> Unit) {
             .wrapContentHeight(align = Alignment.Top)
             .clickable { clickAction.invoke() },
         elevation = CardDefaults.cardElevation(8.dp),
-        colors =  CardDefaults.cardColors(
-            containerColor =  Color.White,
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
         ),
     ) {
         Row(
@@ -129,10 +134,10 @@ fun ProfileContent(name: String, status: Boolean, alignment: Alignment.Horizonta
             style = MaterialTheme.typography.headlineSmall
         )
         Text(
-            text = if(status)
-            "Active Row" else "Offline",
+            text = if (status)
+                "Active Row" else "Offline",
             style = MaterialTheme.typography.bodySmall,
-            color = if(status) Color.Black.copy(alpha = 0.8f) else Color.Black.copy(alpha = 0.5f)
+            color = if (status) Color.Black.copy(alpha = 0.8f) else Color.Black.copy(alpha = 0.5f)
         )
     }
 }
@@ -145,7 +150,7 @@ fun ProfilePicture(drawableId: Int, status: Boolean, imageSize: Dp) {
         .background(Color.LightGray)
     Card(
         shape = CircleShape,
-        border = BorderStroke(width = 2.dp, color = if(status) Color.Green else Color.Red),
+        border = BorderStroke(width = 2.dp, color = if (status) Color.Green else Color.Red),
         modifier = Modifier.padding(16.dp),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -166,9 +171,16 @@ fun ProfilePicture(drawableId: Int, status: Boolean, imageSize: Dp) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserProfileDetailScreen(userId: Int) {
+fun UserProfileDetailScreen(userId: Int, navController: NavController?) {
     val userProfile = userProfileList.first { userProfile -> userId == userProfile.id }
-    Scaffold(topBar = { AppBar() } , content = {
+    Scaffold(topBar = {
+        AppBar(
+            title = "${userProfile.name} Details",
+            icon = Icons.Default.ArrowBack
+        ) {
+            navController!!.navigateUp()
+        }
+    }, content = {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -190,7 +202,7 @@ fun UserProfileDetailScreen(userId: Int) {
 @Composable
 fun UserDetailtPreview() {
     ModuleComposeStudyTheme {
-        UserProfileDetailScreen(1)
+        UserProfileDetailScreen(1, null)
     }
 }
 
