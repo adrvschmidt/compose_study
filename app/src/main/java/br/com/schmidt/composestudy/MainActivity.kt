@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -19,7 +20,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import br.com.schmidt.composestudy.ui.theme.ModuleComposeStudyTheme
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -30,15 +36,28 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ModuleComposeStudyTheme {
-                MainScreen()
+                UsersApplication()
             }
+        }
+    }
+}
+
+@Composable
+fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "users_list") {
+        composable("users_list") {
+            MainScreen(userProfiles, navController)
+        }
+        composable("users_details") {
+            UserProfileDetailScreen()
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
+fun MainScreen(userProfiles: List<UserProfile>, navController: NavController?) {
     Scaffold(topBar = { AppBar() } , content = {
         Surface(
             modifier = Modifier
@@ -47,7 +66,9 @@ fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
         ) {
             LazyColumn {
                 items(userProfiles.size) { index ->
-                    ProfileCard(userProfiles[index])
+                    ProfileCard(userProfiles[index]) {
+                        navController?.navigate("users_details")
+                    }
                 }
             }
         }
@@ -69,12 +90,13 @@ fun AppBar(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileCard(userProfile: UserProfile) {
+fun ProfileCard(userProfile: UserProfile, clickAction: () -> Unit) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
-            .wrapContentHeight(align = Alignment.Top),
+            .wrapContentHeight(align = Alignment.Top)
+            .clickable { clickAction.invoke() },
         elevation = CardDefaults.cardElevation(8.dp),
         colors =  CardDefaults.cardColors(
             containerColor =  Color.White,
@@ -85,18 +107,18 @@ fun ProfileCard(userProfile: UserProfile) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            ProfilePicture(userProfile.drawableId, userProfile.status)
-            ProfileContent(userProfile.name, userProfile.status)
+            ProfilePicture(userProfile.drawableId, userProfile.status, 75.dp)
+            ProfileContent(userProfile.name, userProfile.status, Alignment.Start)
         }
     }
 }
 
 @Composable
-fun ProfileContent(name: String, status: Boolean) {
+fun ProfileContent(name: String, status: Boolean, alignment: Alignment.Horizontal) {
     Column(
         modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalAlignment = alignment
     ) {
         Text(
             name,
@@ -113,9 +135,9 @@ fun ProfileContent(name: String, status: Boolean) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfilePicture(drawableId: Int, status: Boolean) {
+fun ProfilePicture(drawableId: Int, status: Boolean, imageSize: Dp) {
     val imageModifier = Modifier
-        .size(75.dp)
+        .size(imageSize)
         .background(Color.LightGray)
     Card(
         shape = CircleShape,
@@ -138,10 +160,39 @@ fun ProfilePicture(drawableId: Int, status: Boolean) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
+    Scaffold(topBar = { AppBar() } , content = {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                ProfilePicture(userProfile.drawableId, userProfile.status, 200.dp)
+                ProfileContent(userProfile.name, userProfile.status, Alignment.CenterHorizontally)
+            }
+        }
+    })
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UserDetailtPreview() {
+    ModuleComposeStudyTheme {
+        UserProfileDetailScreen()
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ModuleComposeStudyTheme {
-        MainScreen()
+        MainScreen(userProfiles = userProfileList, null)
     }
 }
